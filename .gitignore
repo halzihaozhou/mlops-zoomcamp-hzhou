@@ -1,23 +1,35 @@
-data/
+# Jupyter & notebooks
 .ipynb_checkpoints
-.bin
-*.db
+.DS_Store
 
+# Project data files
+data/
+*.csv
 *.parquet
 *.html
-*.csv
+*.pkl
+*.db
+*.bin
 
+# Python virtual environments
 .venv
 venv
-.idea
-**/artifacts/
-**/models/
+__pycache__
 
-__pycache__/
-**.env
+# IDE settings
+.idea
+
+# MLflow & model artifacts
+mlruns/
+mlartifacts/
+models/
+**/models/
+**/artifacts/
+
+# Terraform
 **.terraform/
 **.terraform.lock*
 **terraform.tfstate*
 
-
-.DS_Store
+# Env files
+**.env
