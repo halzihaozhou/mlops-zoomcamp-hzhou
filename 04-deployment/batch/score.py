@@ -23,6 +23,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import make_pipeline
 
+run_id = os.getenv('run_id','baf244d99b5049c28758ca0de4b42a02')
 
 def generate_uuids(n):
     ride_ids = []
@@ -56,7 +57,7 @@ def prepare_dictionaries(df: pd.DataFrame):
 
 
 def load_model(run_id):
-    logged_model = f's3://mlflow-models-alexey/1/{run_id}/artifacts/model'
+    logged_model = f's3://mlflow-models-deployment/2/{run_id}/artifacts/model/'
     model = mlflow.pyfunc.load_model(logged_model)
     return model
 
@@ -94,14 +95,14 @@ def apply_model(input_file, run_id, output_file):
     save_results(df, y_pred, run_id, output_file)
     return output_file
 
-
+@task
 def get_paths(run_date, taxi_type, run_id):
-    prev_month = run_date - relativedelta(months=1)
+    prev_month = run_date - relativedelta(months=4)
     year = prev_month.year
     month = prev_month.month 
 
-    input_file = f's3://nyc-tlc/trip data/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
-    output_file = f's3://nyc-duration-prediction-alexey/taxi_type={taxi_type}/year={year:04d}/month={month:02d}/{run_id}.parquet'
+    input_file = f's3://mlops-zoomcamp-hal4zhou/data_source/{taxi_type}_tripdata_{year:04d}-{month:02d}.parquet'
+    output_file = f's3://nyc-duration-prediction-hal4zhou/{taxi_type}/{year:04d}-{month:02d}/{run_id}.parquet'
 
     return input_file, output_file
 
@@ -114,6 +115,8 @@ def ride_duration_prediction(
     if run_date is None:
         ctx = get_run_context()
         run_date = ctx.flow_run.expected_start_time
+
+
     
     input_file, output_file = get_paths(run_date, taxi_type, run_id)
 
